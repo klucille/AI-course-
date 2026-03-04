@@ -21,6 +21,7 @@ def list_students():
         print("\nNo students registered yet.")
         return
     
+    
     print("\n--- Student List ---")
     for s in students:
         print(f"ID: {s['id']} | Name: {s['name']} | Grade: {s['grade']}")
