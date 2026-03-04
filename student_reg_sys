@@ -1,9 +1,33 @@
-# Initialize an empty list to store student data
+import json
+import os
+
+# File name where data will be stored
+DATA_FILE = "students.json"
+
+# Initialize an empty list
 students = []
+
+def load_data():
+    """Loads student data from the JSON file if it exists."""
+    global students
+    if os.path.exists(DATA_FILE):
+        try:
+            with open(DATA_FILE, "r") as f:
+                students = json.load(f)
+        except (json.JSONDecodeError, IOError):
+            students = []
+            print("Error loading data. Starting with an empty list.")
+
+def save_data():
+    """Saves the current students list to the JSON file."""
+    try:
+        with open(DATA_FILE, "w") as f:
+            json.dump(students, f, indent=4)
+    except IOError as e:
+        print(f"Error saving data: {e}")
 
 def add_student():
     student_id = input("Enter Student ID: ")
-    # Check if ID already exists
     for s in students:
         if s['id'] == student_id:
             print("Error: Student ID already exists!")
@@ -14,13 +38,13 @@ def add_student():
     
     student = {"id": student_id, "name": name, "grade": grade}
     students.append(student)
+    save_data()  # Save after adding
     print(f"Student {name} added successfully.")
 
 def list_students():
     if not students:
         print("\nNo students registered yet.")
         return
-    
     
     print("\n--- Student List ---")
     for s in students:
@@ -33,6 +57,7 @@ def update_student():
             print(f"Updating record for {s['name']}")
             s['name'] = input("Enter new name: ")
             s['grade'] = input("Enter new grade: ")
+            save_data()  # Save after updating
             print("Update complete!")
             return
     print("Student ID not found.")
@@ -42,11 +67,16 @@ def delete_student():
     for i in range(len(students)):
         if students[i]['id'] == search_id:
             deleted = students.pop(i)
+            save_data()  # Save after deleting
             print(f"Student {deleted['name']} removed.")
             return
     print("Student ID not found.")
 
-# Main Program Loop
+# --- Main Program Loop ---
+
+# 1. Load existing data before entering the loop
+load_data()
+
 while True:
     print("\n--- Student Registration System ---")
     print("1. Add Student")
